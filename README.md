@@ -1,5 +1,4 @@
-# Project3_Metacrafter
-# ExampleContract
+# School_Grading_System
 
 ## Overview
 The `School Grading System` is a simple Solidity smart contract that demonstrates the usage of `require()`, `assert()`, and `revert()` statements. These statements are used to handle errors and ensure the contract functions as expected.
