@@ -4,13 +4,13 @@ pragma solidity ^0.8.0;
 contract SchoolGradingSystem {
     struct Student {
         string name;
-        uint256 grade;
+        uint256 marks;
         bool exists;
     }
 
-    mapping(address => Student) public students;
-    address public teacher;
-    
+    mapping(address => Student) private students;
+    address private teacher;
+
     modifier onlyTeacher() {
         require(msg.sender == teacher, "Only the teacher can perform this action");
         _;
@@ -20,33 +20,31 @@ contract SchoolGradingSystem {
         teacher = msg.sender;
     }
 
-    function enrollStudent(address studentAddress, string memory name, uint256 initialGrade) public onlyTeacher {
-        require(initialGrade >= 0 && initialGrade <= 100, "Initial grade must be between 0 and 100");
+    function enrollStudent(address studentAddress, string memory name, uint256 initialmarks) public onlyTeacher {
+        require(initialmarks <= 100, "Grade must be between 0 and 100");
         require(!students[studentAddress].exists, "Student already enrolled");
 
-        students[studentAddress] = Student(name, initialGrade, true);
+        students[studentAddress] = Student(name, initialmarks, true);
     }
 
-    function updateStudentGrade(address studentAddress, uint256 newGrade) public onlyTeacher {
-        require(newGrade >= 0 && newGrade <= 100, "New grade must be between 0 and 100");
+    function updateStudentMarks(address studentAddress, uint256 newMarks) public onlyTeacher {
+        require(newMarks <= 100, "Grade must be between 0 and 100");
         require(students[studentAddress].exists, "Student not enrolled");
 
-        students[studentAddress].grade = newGrade;
+        students[studentAddress].marks= newMarks;
     }
 
-    function increaseGrade(address studentAddress) public onlyTeacher {
+    function changeMarks(address studentAddress, int256 delta) public onlyTeacher {
         require(students[studentAddress].exists, "Student not enrolled");
-        uint256 oldGrade = students[studentAddress].grade;
-        students[studentAddress].grade += 5; // Increase grade by 5 points
-        assert(students[studentAddress].grade >= oldGrade);
+        int256 newMarks = int256(students[studentAddress].marks) + delta;
+        require(newMarks >= 0 && newMarks <= 100, "Grade must be between 0 and 100");
+
+        students[studentAddress].marks = uint256(newMarks);
     }
 
-    function decreaseGrade(address studentAddress) public onlyTeacher {
+    function getStudent(address studentAddress) public view returns (string memory, uint256) {
         require(students[studentAddress].exists, "Student not enrolled");
-        uint256 oldGrade = students[studentAddress].grade;
-        if (oldGrade >= 5) {
-            students[studentAddress].grade -= 5; // Decrease grade by 5 points if possible
-        }
-        assert(students[studentAddress].grade <= oldGrade);
+        Student memory student = students[studentAddress];
+        return (student.name, student.marks);
     }
 }
