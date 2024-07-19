@@ -2,7 +2,7 @@
 # ExampleContract
 
 ## Overview
-The `ExampleContract` is a simple Solidity smart contract that demonstrates the usage of `require()`, `assert()`, and `revert()` statements. These statements are used to handle errors and ensure the contract functions as expected.
+The `School Grading System` is a simple Solidity smart contract that demonstrates the usage of `require()`, `assert()`, and `revert()` statements. These statements are used to handle errors and ensure the contract functions as expected.
 
 ## Features
 - **require()**: Checks for valid conditions before executing certain functions.
@@ -31,9 +31,6 @@ The `ExampleContract` is a simple Solidity smart contract that demonstrates the 
 2. Call `updateValue()` with a new value to update the stored value.
 3. Call `doubleValue()` to double the stored value.
 4. Call `resetValue()` to reset the value to zero, ensuring the value is not already zero.
-
-## Video Walkthrough
-A video walkthrough explaining the code can be found [here]https://www.loom.com/share/1d54f616ccf1485486381c28c329848a?sid=227f148f-7e8c-47c7-8d9d-588ab7f3368f.
 
 ## License
 This project is licensed under the MIT License. 
