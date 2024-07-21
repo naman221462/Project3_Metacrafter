@@ -20,30 +20,45 @@ contract SchoolGradingSystem {
         teacher = msg.sender;
     }
 
-    function enrollStudent(address studentAddress, string memory name, uint256 initialmarks) public onlyTeacher {
-        require(initialmarks <= 100, "Grade must be between 0 and 100");
-        require(!students[studentAddress].exists, "Student already enrolled");
+    function enrollStudent(address studentAddress, string memory name, uint256 initialMarks) public onlyTeacher {
+        if (initialMarks > 100) {
+            revert("Grade must be between 0 and 100");
+        }
+        if (students[studentAddress].exists) {
+            revert("Student already enrolled");
+        }
 
-        students[studentAddress] = Student(name, initialmarks, true);
+        students[studentAddress] = Student(name, initialMarks, true);
     }
 
     function updateStudentMarks(address studentAddress, uint256 newMarks) public onlyTeacher {
-        require(newMarks <= 100, "Grade must be between 0 and 100");
-        require(students[studentAddress].exists, "Student not enrolled");
+        if (newMarks > 100) {
+            revert("Grade must be between 0 and 100");
+        }
+        if (!students[studentAddress].exists) {
+            revert("Student not enrolled");
+        }
 
-        students[studentAddress].marks= newMarks;
+        students[studentAddress].marks = newMarks;
     }
 
     function changeMarks(address studentAddress, int256 delta) public onlyTeacher {
-        require(students[studentAddress].exists, "Student not enrolled");
+        if (!students[studentAddress].exists) {
+            revert("Student not enrolled");
+        }
         int256 newMarks = int256(students[studentAddress].marks) + delta;
-        require(newMarks >= 0 && newMarks <= 100, "Grade must be between 0 and 100");
+        if (newMarks < 0 || newMarks > 100) {
+            revert("Grade must be between 0 and 100");
+        }
 
         students[studentAddress].marks = uint256(newMarks);
+        assert(students[studentAddress].marks <= 100);
     }
 
     function getStudent(address studentAddress) public view returns (string memory, uint256) {
-        require(students[studentAddress].exists, "Student not enrolled");
+        if (!students[studentAddress].exists) {
+            revert("Student not enrolled");
+        }
         Student memory student = students[studentAddress];
         return (student.name, student.marks);
     }
