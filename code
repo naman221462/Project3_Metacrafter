@@ -21,9 +21,7 @@ contract SchoolGradingSystem {
     }
 
     function enrollStudent(address studentAddress, string memory name, uint256 initialMarks) public onlyTeacher {
-        if (initialMarks > 100) {
-            revert("Grade must be between 0 and 100");
-        }
+        require(initialMarks <= 100, "Grade must be between 0 and 100");
         if (students[studentAddress].exists) {
             revert("Student already enrolled");
         }
@@ -32,9 +30,7 @@ contract SchoolGradingSystem {
     }
 
     function updateStudentMarks(address studentAddress, uint256 newMarks) public onlyTeacher {
-        if (newMarks > 100) {
-            revert("Grade must be between 0 and 100");
-        }
+        require(newMarks <= 100, "Grade must be between 0 and 100");
         if (!students[studentAddress].exists) {
             revert("Student not enrolled");
         }
@@ -56,9 +52,7 @@ contract SchoolGradingSystem {
     }
 
     function getStudent(address studentAddress) public view returns (string memory, uint256) {
-        if (!students[studentAddress].exists) {
-            revert("Student not enrolled");
-        }
+        require(students[studentAddress].exists, "Student not enrolled");
         Student memory student = students[studentAddress];
         return (student.name, student.marks);
     }
