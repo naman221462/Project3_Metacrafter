@@ -1,59 +1,64 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-contract SchoolGradingSystem {
-    struct Student {
+contract VotingSystem {
+    struct Candidate {
         string name;
-        uint256 marks;
+        uint256 voteCount;
         bool exists;
     }
 
-    mapping(address => Student) private students;
-    address private teacher;
+    struct Voter {
+        bool hasVoted;
+        bool exists;
+    }
 
-    modifier onlyTeacher() {
-        require(msg.sender == teacher, "Only the teacher can perform this action");
+    mapping(address => Candidate) public candidates;
+    mapping(address => Voter) public voters;
+    address private admin;
+
+    modifier onlyAdmin() {
+        require(msg.sender == admin, "Only the admin can perform this action");
+        _;
+    }
+
+    modifier hasNotVoted() {
+        require(!voters[msg.sender].hasVoted, "You have already voted");
         _;
     }
 
     constructor() {
-        teacher = msg.sender;
+        admin = msg.sender;
     }
 
-    function enrollStudent(address studentAddress, string memory name, uint256 initialMarks) public onlyTeacher {
-        require(initialMarks <= 100, "Grade must be between 0 and 100");
-        if (students[studentAddress].exists) {
-            revert("Student already enrolled");
-        }
+    function addCandidate(address candidateAddress, string memory name) public onlyAdmin {
+        require(!candidates[candidateAddress].exists, "Candidate already exists");
+        require(bytes(name).length > 0, "Candidate name cannot be empty");
 
-        students[studentAddress] = Student(name, initialMarks, true);
+        candidates[candidateAddress] = Candidate(name, 0, true);
     }
 
-    function updateStudentMarks(address studentAddress, uint256 newMarks) public onlyTeacher {
-        require(newMarks <= 100, "Grade must be between 0 and 100");
-        if (!students[studentAddress].exists) {
-            revert("Student not enrolled");
-        }
+    function vote(address candidateAddress) public hasNotVoted {
+        require(candidates[candidateAddress].exists, "Candidate does not exist");
 
-        students[studentAddress].marks = newMarks;
+        // Mark voter as having voted
+        voters[msg.sender] = Voter(true, true);
+
+        // Increment candidate vote count
+        candidates[candidateAddress].voteCount++;
+
+        // Ensure the vote count is not negative
+        assert(candidates[candidateAddress].voteCount >= 0);
+
+        // Additional revert check (for illustration)
+        if (candidates[candidateAddress].voteCount < 0) {
+            revert("Vote count should not be negative");
+        }
     }
 
-    function changeMarks(address studentAddress, int256 delta) public onlyTeacher {
-        if (!students[studentAddress].exists) {
-            revert("Student not enrolled");
-        }
-        int256 newMarks = int256(students[studentAddress].marks) + delta;
-        if (newMarks < 0 || newMarks > 100) {
-            revert("Grade must be between 0 and 100");
-        }
-
-        students[studentAddress].marks = uint256(newMarks);
-        assert(students[studentAddress].marks <= 100);
-    }
-
-    function getStudent(address studentAddress) public view returns (string memory, uint256) {
-        require(students[studentAddress].exists, "Student not enrolled");
-        Student memory student = students[studentAddress];
-        return (student.name, student.marks);
+    function getCandidate(address candidateAddress) public view returns (string memory, uint256) {
+        require(candidates[candidateAddress].exists, "Candidate does not exist");
+        Candidate memory candidate = candidates[candidateAddress];
+        return (candidate.name, candidate.voteCount);
     }
 }
