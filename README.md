@@ -1,35 +1,37 @@
-# School_Grading_System
+# Voting_System
 
 ## Overview
-The `School Grading System` is a simple Solidity smart contract that demonstrates the usage of `require()`, `assert()`, and `revert()` statements. These statements are used to handle errors and ensure the contract functions as expected.
+The `Voting System` is a Solidity smart contract designed for managing elections. It demonstrates the use of `require()`, `assert()`, and `revert()` statements to handle errors and ensure the contract operates as expected.
 
 ## Features
-- **require()**: Checks for valid conditions before executing certain functions.
-- **assert()**: Ensures that the internal state of the contract is correct.
-- **revert()**: Reverts the transaction if certain conditions are not met.
+- **require()**: Validates conditions before executing specific functions.
+- **assert()**: Ensures the integrity of the contract's internal state.
+- **revert()**: Reverts transactions if certain conditions are not met.
 
 ## Functions
+
 ### constructor
-- Initializes the contract with an initial value.
-- Ensures the initial value is greater than zero using `require()`.
+- Initializes the contract and sets the contract deployer as the admin.
 
-### updateValue
-- Updates the stored value to a new value.
-- Uses `require()` to ensure the new value is greater than zero.
+### addCandidate
+- Adds a new candidate to the system.
+- Uses `require()` to ensure the candidate does not already exist and the candidate name is not empty.
 
-### doubleValue
-- Doubles the current value.
-- Uses `assert()` to ensure the value doubled correctly.
+### vote
+- Allows a voter to cast a vote for a candidate.
+- Uses `require()` to verify that the candidate exists.
+- Uses `assert()` to ensure that the vote count remains non-negative.
+- Uses `revert()` (illustrative) to revert the transaction if the vote count becomes negative, although this should not normally occur due to the use of `assert()`.
 
-### resetValue
-- Resets the value to zero.
-- Uses `revert()` to prevent resetting if the value is already zero.
+### getCandidate
+- Retrieves details of a specific candidate based on their address.
+- Uses `require()` to ensure that the candidate exists before returning their details.
 
 ## How to Use
-1. Deploy the contract with an initial value greater than zero.
-2. Call `updateValue()` with a new value to update the stored value.
-3. Call `doubleValue()` to double the stored value.
-4. Call `resetValue()` to reset the value to zero, ensuring the value is not already zero.
+1. Deploy the contract. The deployer is assigned as the admin.
+2. Call `addCandidate()` with a candidate’s address and name to add a new candidate.
+3. Call `vote()` with a candidate’s address to cast a vote for that candidate. Ensure you have not voted before using the `hasNotVoted` modifier.
+4. Call `getCandidate()` with a candidate’s address to retrieve their name and vote count.
 
 ## License
-This project is licensed under the MIT License. 
+This project is licensed under the MIT License.
